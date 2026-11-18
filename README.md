@@ -29,6 +29,64 @@ de datas e reservas acima da disponibilidade.
 - Registro de devoluções
 - Testes automatizados
 
+## Modelo de Dados (DER)
+
+```mermaid
+erDiagram
+    CLIENTES ||--o{ RESERVAS : "realiza"
+    RESERVAS ||--|{ RESERVA_ITENS : "contem"
+    ITENS ||--o{ RESERVA_ITENS : "alocado_em"
+    RESERVAS ||--o| RETIRADAS : "registra"
+    RESERVAS ||--o| DEVOLUCOES : "finaliza"
+
+    CLIENTES {
+        bigint id PK
+        varchar nome "NOT NULL"
+        varchar documento "NOT NULL, UNIQUE"
+        varchar telefone "NOT NULL"
+        varchar email "NOT NULL, UNIQUE"
+    }
+
+    ITENS {
+        bigint id PK
+        varchar nome "NOT NULL"
+        varchar descricao
+        varchar categoria "NOT NULL"
+        int quantidade_total "NOT NULL (> 0)"
+        bit ativo "NOT NULL (DEFAULT 1)"
+    }
+
+    RESERVAS {
+        bigint id PK
+        bigint cliente_id FK "NOT NULL"
+        date data_inicio "NOT NULL"
+        date data_fim "NOT NULL"
+        varchar status "PENDENTE | CONFIRMADA | RETIRADA | DEVOLVIDA | CANCELADA"
+        datetime2 criado_em "NOT NULL"
+    }
+
+    RESERVA_ITENS {
+        bigint id PK
+        bigint reserva_id FK "NOT NULL"
+        bigint item_id FK "NOT NULL"
+        int quantidade "NOT NULL (> 0)"
+    }
+
+    RETIRADAS {
+        bigint id PK
+        bigint reserva_id FK "NOT NULL, UNIQUE"
+        datetime2 data_retirada "NOT NULL"
+        varchar observacao
+    }
+
+    DEVOLUCOES {
+        bigint id PK
+        bigint reserva_id FK "NOT NULL, UNIQUE"
+        datetime2 data_devolucao "NOT NULL"
+        varchar observacao
+    }
+```
+
 ## Pré-requisitos
 
 - JDK 21
