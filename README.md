@@ -102,6 +102,12 @@ java -version
 
 ## Configuração por variáveis de ambiente
 
+> **Importante (Primeira execução no SQL Server):** Antes de iniciar a aplicação pela primeira vez, crie o banco de dados vazio na sua instância do SQL Server:
+> ```sql
+> CREATE DATABASE alugafacil;
+> ```
+> Após a criação do banco, o **Flyway** executará as migrations automaticamente ao subir a aplicação e criará todas as tabelas, relacionamentos e índices.
+
 As credenciais e a conexão com o banco não devem ser gravadas no Git.
 O Spring Boot reconhece automaticamente as variáveis
 `SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME` e
