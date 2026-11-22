@@ -129,4 +129,25 @@ class ClienteRepositoryTest {
 		assertThatThrownBy(() -> clienteRepository.saveAndFlush(duplicado))
 				.isInstanceOf(DataIntegrityViolationException.class);
 	}
+
+	@Test
+	void deveVerificarDuplicidadeExcluindoProprioIdEIgnorandoMaiusculasNoEmail() {
+		Cliente primeiro = clienteRepository.saveAndFlush(
+				new Cliente("Cliente Um", "10101010101", "83991010101", "Unico.Um@Teste.com")
+		);
+		Cliente segundo = clienteRepository.saveAndFlush(
+				new Cliente("Cliente Dois", "20202020202", "83992020202", "unico.dois@teste.com")
+		);
+
+		assertThat(clienteRepository.existsByEmailIgnoreCase("unico.um@teste.com")).isTrue();
+		assertThat(clienteRepository.existsByEmailIgnoreCase("UNICO.UM@TESTE.COM")).isTrue();
+		assertThat(clienteRepository.existsByEmailIgnoreCase("naoexiste@teste.com")).isFalse();
+
+		assertThat(clienteRepository.existsByDocumentoAndIdNot("10101010101", primeiro.getId())).isFalse();
+		assertThat(clienteRepository.existsByDocumentoAndIdNot("20202020202", primeiro.getId())).isTrue();
+
+		assertThat(clienteRepository.existsByEmailIgnoreCaseAndIdNot("unico.um@teste.com", primeiro.getId())).isFalse();
+		assertThat(clienteRepository.existsByEmailIgnoreCaseAndIdNot("UNICO.DOIS@TESTE.COM", primeiro.getId())).isTrue();
+		assertThat(clienteRepository.existsByEmailIgnoreCaseAndIdNot("unico.um@teste.com", segundo.getId())).isTrue();
+	}
 }
